@@ -44,6 +44,7 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 #
+sudo apt-get update &>/dev/null
 ensure_package_installed "dialog" "Dialog"
 #
 DEFAULT_GHOSTUSER=ghostuser
@@ -119,6 +120,7 @@ fi
         echo 50
         echo "MySQL installed and root password set"
         echo "XXX"
+		clear
     fi
     #
     echo "XXX"
@@ -126,13 +128,8 @@ fi
     echo "Installing Node.js v10.x source repo"
     echo "XXX"
     curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash &>/dev/null
-    echo "XXX"
-    echo 65
-    echo "Installing Node.js..."
-    echo "XXX"
-    sudo apt-get install -y nodejs &>/dev/null
-    echo "XXX"
-    echo 75
+    ensure_package_installed "nodejs" "Node.js" "65" "75" result
+    echo "XXX";
     echo "Ensuring latest Ghost-CLI installed..."
     echo "XXX"
     sudo npm install ghost-cli@latest -g --quiet --no-progress &>/dev/null
@@ -147,7 +144,7 @@ fi
     echo 100
     echo "Now you just need to run:\nsu - $GHOSTUSER\ncd /var/www/$SITEDIRECTORY\nghost install --v1 # if upgrading from Ghost 0.x\nghost install # for installing/upgrading > v1.x"
     echo "XXX"
-) | dialog --title "Installing Ghost..." --gauge "Installing required packages..." 10 66 0
+) | dialog --title "Installing Ghost..." --gauge "Installing required packages..." 10 60 0
 cd /var/www/$SITEDIRECTORY
 su $GHOSTUSER
 #End
