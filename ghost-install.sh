@@ -1,7 +1,7 @@
 # ghost-install.sh
 # https://tomssl.com/the-best-way-to-install-ghost-on-your-server
 # So far I have only tested this on a new machine.
-# There are some sleep statements in here to make it nicer to run interactively. 
+# There are some sleep statements in here to make it nicer to run interactively.
 export NCURSES_NO_UTF8_ACS=1
 function ensure_package_installed() {
     # $1 is package name, $2 Package description, $3 Start Percentage, $4 End Percentage
@@ -72,26 +72,26 @@ if [ -z "$DEFAULT_SITEDIRECTORY" ]; then
 fi
 #
 (
-    sleep 1
+    sleep 0.5
     echo "XXX"
     echo 1
     echo "Adding $GHOSTUSER user..."
     echo "XXX"
-    sleep 1
+    sleep 0.5
     adduser --disabled-password --gecos "" $GHOSTUSER &>/dev/null &&
-        echo "User $GHOSTUSER added. To set password, run 'sudo passwd $GHOSTUSER'"
+        echo 0.5"User $GHOSTUSER added. To set password, run 'sudo passwd $GHOSTUSER'"
     sleep 1
     echo "XXX"
     echo 3
     echo "Modifying permissions of $GHOSTUSER..."
     echo "XXX"
-    sleep 1
+    sleep 0.5
     usermod -aG sudo $GHOSTUSER || echo "Couldn't modify user"
     echo "XXX"
     echo 5
     echo "Permissions modified"
     echo "XXX"
-    sleep 1
+    sleep 0.5
     ensure_package_installed "nginx" "Nginx" "10" "15" result
     ensure_package_installed "ufw" "ufw [Firewall]" "16" "20" result
     echo "XXX": echo 21
@@ -108,7 +108,6 @@ fi
     ensure_package_installed "mysql-server" "MySQL" "31" "40" result
     if [ $result -eq 1 ]; then
         # We just installed mysql-server, so we should set the root password
-		sleep 1;
         data="something"
         until [ "$data" = "$data2" ]; do
             data=$(dialog --title "Set MySQL root password" --insecure --passwordbox "Please enter a password for the mysql root user. You will need this password when you install each of your Ghost blogs." 10 60 3>&1- 1>&2- 2>&3-)
@@ -116,20 +115,16 @@ fi
         done
         sql="ALTER USER 'root'@'localhost' IDENTIFIED BY '$data';FLUSH PRIVILEGES;"
         mysql -u root -e "$sql" >/home/ghostuser/sqlfrominsidescript.txt
-        echo "XXX"
-        echo 50
-        echo "MySQL installed and root password set"
-        echo "XXX"
-		clear
-    fi
+     fi
+) | dialog --title "Installing Ghost..." --gauge "Installing required packages..." 10 60 0
     #
+(
     echo "XXX"
     echo 51
     echo "Installing Node.js v10.x source repo"
     echo "XXX"
     curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash &>/dev/null
     ensure_package_installed "nodejs" "Node.js" "65" "75" result
-    echo "XXX";
     echo "Ensuring latest Ghost-CLI installed..."
     echo "XXX"
     sudo npm install ghost-cli@latest -g --quiet --no-progress &>/dev/null
@@ -144,7 +139,7 @@ fi
     echo 100
     echo "Now you just need to run:\nsu - $GHOSTUSER\ncd /var/www/$SITEDIRECTORY\nghost install --v1 # if upgrading from Ghost 0.x\nghost install # for installing/upgrading > v1.x"
     echo "XXX"
-) | dialog --title "Installing Ghost..." --gauge "Installing required packages..." 10 60 0
+) | dialog --title "Installing Ghost..." --gauge "Installing required packages..." 10 60 50
 cd /var/www/$SITEDIRECTORY
 su $GHOSTUSER
 #End
