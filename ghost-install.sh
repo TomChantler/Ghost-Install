@@ -113,8 +113,8 @@ fi
             data=$(dialog --title "Set MySQL root password" --insecure --passwordbox "Please enter a password for the mysql root user. You will need this password when you install each of your Ghost blogs." 10 60 3>&1- 1>&2- 2>&3-)
             data2=$(dialog --title "Set MySQL root password" --insecure --passwordbox "Please re-enter your password." 10 60 3>&1- 1>&2- 2>&3-)
         done
-        sql="ALTER USER 'root'@'localhost' IDENTIFIED BY '$data';FLUSH PRIVILEGES;"
-        mysql -u root -e "$sql" >/home/ghostuser/sqlfrominsidescript.txt
+        sql="ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$data';FLUSH PRIVILEGES;"
+        sudo mysql -u root -e "$sql" >/home/ghostuser/sqlfrominsidescript.txt
      fi
 ) | dialog --title "Installing Ghost..." --gauge "Installing required packages..." 10 60 0
     #
