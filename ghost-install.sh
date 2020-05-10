@@ -114,7 +114,7 @@ fi
             data2=$(dialog --title "Set MySQL root password" --insecure --passwordbox "Please re-enter your password." 10 60 3>&1- 1>&2- 2>&3-)
         done
         sql="ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '$data';FLUSH PRIVILEGES;"
-        sudo mysql -u root -e "$sql" >/home/ghostuser/sqlfrominsidescript.txt
+        sudo mysql -u root -e "$sql" >/dev/null
      fi
 ) | dialog --title "Installing Ghost..." --gauge "Installing required packages..." 10 60 0
     #
